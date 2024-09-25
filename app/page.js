@@ -1,101 +1,278 @@
-import Image from "next/image";
+"use client";
+import React, { useEffect, useState } from "react";
 
-export default function Home() {
+const Page = () => {
+  const [noofMoves, setNoOfMoves] = useState(32);
+  const rows = 14;
+  const cols = 14;
+
+  const [array, setArray] = useState([]);
+  const [isVisited, setIsVisited] = useState([]);
+  const [gameWon, setGameWon] = useState(false);
+
+  const getRandomNumbers = () => {
+    return Math.floor(Math.random() * 6) + 1;
+  };
+
+  const fillRandomNumbersInArray = () => {
+    const tempArray = [];
+    const isVisitedTempArray = [];
+    for (let i = 0; i < rows; i++) {
+      tempArray[i] = [];
+      isVisitedTempArray[i] = [];
+      for (let j = 0; j < cols; j++) {
+        tempArray[i][j] = getRandomNumbers();
+        isVisitedTempArray[i][j] = 0;
+      }
+    }
+    isVisitedTempArray[0][0] = 1;
+    setArray(tempArray);
+    setIsVisited(isVisitedTempArray);
+  };
+
+  const handleChange = (colorChoosed) => {
+    console.log(colorChoosed);
+    let visitedArray = [...isVisited];
+    let boardArray = [...array];
+    let queue = [];
+    let directions = [
+      [1, 0],
+      [0, 1],
+      [0, -1],
+      [-1, 0],
+    ];
+
+    let isVisitedArray = [];
+    for (let i = 0; i < 14; i++) {
+      isVisitedArray[i] = [];
+      for (let j = 0; j < 14; j++) {
+        isVisitedArray[i][j] = 0;
+      }
+    }
+
+    for (let i = 0; i < 14; i++) {
+      for (let j = 0; j < 14; j++) {
+        if (visitedArray[i][j] === 1) {
+          boardArray[i][j] = colorChoosed;
+        }
+      }
+    }
+
+    queue.push([0, 0]);
+    while (queue.length > 0) {
+      let [i, j] = queue.shift();
+      isVisitedArray[i][j] = 1;
+
+      for (let direction = 0; direction < directions.length; direction++) {
+        let row = i + directions[direction][0];
+        let col = j + directions[direction][1];
+
+        if (
+          row >= 0 &&
+          col >= 0 &&
+          row < boardArray.length &&
+          col < boardArray[0].length &&
+          isVisitedArray[row][col] === 0 &&
+          boardArray[row][col] === colorChoosed
+        ) {
+          queue.push([row, col]);
+          visitedArray[row][col] = 1;
+          console.log("hello");
+        }
+      }
+    }
+
+    setIsVisited(visitedArray);
+    setArray(boardArray);
+    setNoOfMoves((prev) => prev - 1);
+  };
+
+  const handleChangedfs = (colorChoosed) => {
+    console.log(colorChoosed);
+    let visitedArray = [...isVisited];
+    let boardArray = [...array];
+    let queue = [];
+    let directions = [
+      [1, 0],
+      [0, 1],
+      [0, -1],
+      [-1, 0],
+    ];
+
+    let isVisitedArray = [];
+    for (let i = 0; i < 14; i++) {
+      isVisitedArray[i] = [];
+      for (let j = 0; j < 14; j++) {
+        isVisitedArray[i][j] = 0;
+      }
+    }
+
+    for (let i = 0; i < 14; i++) {
+      for (let j = 0; j < 14; j++) {
+        if (visitedArray[i][j] === 1) {
+          boardArray[i][j] = colorChoosed;
+        }
+      }
+    }
+
+    helper(visitedArray, boardArray, isVisitedArray, 0, 0, colorChoosed);
+    setGameWon(isWin(boardArray, colorChoosed));
+    setIsVisited(visitedArray);
+    setArray(boardArray);
+    setNoOfMoves((prev) => prev - 1);
+  };
+
+  const isWin = (boardArray, colorChoosed) => {
+    for (let i = 0; i < 14; i++) {
+      for (let j = 0; j < 14; j++) {
+        if (boardArray[i][j] != colorChoosed) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  const helper = (
+    visitedArray,
+    boardArray,
+    isVisitedArray,
+    row,
+    col,
+    colorChoosed
+  ) => {
+    isVisitedArray[row][col] = 1;
+    visitedArray[row][col] = 1;
+    let directions = [
+      [1, 0],
+      [0, 1],
+      [0, -1],
+      [-1, 0],
+    ];
+    for (let direction = 0; direction < directions.length; direction++) {
+      let r = row + directions[direction][0];
+      let c = col + directions[direction][1];
+      if (
+        r >= 0 &&
+        c >= 0 &&
+        r < 14 &&
+        c < 14 &&
+        isVisitedArray[r][c] === 0 &&
+        boardArray[r][c] === colorChoosed
+      ) {
+        helper(visitedArray, boardArray, isVisitedArray, r, c, colorChoosed);
+      }
+    }
+  };
+
+  const reset = () => {
+    fillRandomNumbersInArray();
+    setGameWon(false);
+    setNoOfMoves(30);
+  };
+
+  useEffect(() => {
+    fillRandomNumbersInArray();
+  }, []);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <section className="min-h-[100vh] min-w-[100vh] flex justify-center items-center bg-black bg-opacity-50 overflow-hidden">
+      <div className="flex justify-center items-center gap-4  max-md:flex-col">
+        <div className="grid  grid-rows-14 grid-cols-14 w-fit shadow-2xl relative">
+          {gameWon ? (
+            <div
+              className="w-[300px] h-[300px] bg-orange-600 absolute bottom-5 right-5 text-center flex flex-col gap-4 justify-center items-center cursor-pointer"
+              onClick={() => reset()}
+            >
+              <h1 className="text-6xl text-white font-bold">
+                Game <br /> Won
+              </h1>
+              <p className="text-xl text-white font-bold">
+                Click this box <br /> to try again!
+              </p>
+            </div>
+          ) : noofMoves <= 0 ? (
+            <div
+              className="w-[300px] h-[300px] bg-orange-600 absolute bottom-5 right-5 text-center flex flex-col gap-4 justify-center items-center cursor-pointer"
+              onClick={() => reset()}
+            >
+              <h1 className="text-6xl text-white font-bold">
+                Game <br /> Over
+              </h1>
+              <p className="text-xl text-white font-bold">
+                Click this box <br /> to try again!
+              </p>
+            </div>
+          ) : (
+            <></>
+          )}
+          {array.map((numsArray, rowIndex) =>
+            numsArray.map((nums, colIndex) => (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                className={`w-6 h-6 ${
+                  nums === 1
+                    ? "bg-green-600"
+                    : nums === 2
+                    ? "bg-pink-600"
+                    : nums === 3
+                    ? "bg-violet-600"
+                    : nums === 4
+                    ? "bg-green-200"
+                    : nums === 5
+                    ? "bg-red-600"
+                    : "bg-yellow-400"
+                }`}
+              ></div>
+            ))
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <div className="flex flex-col gap-4 p-4 h-full bg-black bg-opacity-20 shadow-xl w-[280px]">
+          <div className="flex gap-3">
+            <div className="text-6xl bg-black text-white p-4  min-w-20 text-center min-h-20">
+              {noofMoves}
+            </div>
+            <p className="text-xl font-bold">
+              Moves to <br /> Drench the <br />
+              board
+            </p>
+          </div>
+          <div className="grid grid-cols-3 grid-rows-2 gap-4">
+            <div
+              className="bg-green-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              onClick={() => handleChangedfs(1)}
+            ></div>
+            <div
+              className="bg-pink-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              onClick={() => handleChangedfs(2)}
+            ></div>
+            <div
+              className="bg-violet-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              onClick={() => handleChangedfs(3)}
+            ></div>
+            <div
+              className="bg-green-200 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              onClick={() => handleChangedfs(4)}
+            ></div>
+            <div
+              className="bg-red-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              onClick={() => handleChangedfs(5)}
+            ></div>
+            <div
+              className="bg-yellow-400 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              onClick={() => handleChangedfs(6)}
+            ></div>
+          </div>
+          <button
+            className="px-4 py-2 bg-yellow-600 w-36 ml-10  text-lg"
+            onClick={() => reset()}
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </section>
   );
-}
+};
+
+export default Page;
