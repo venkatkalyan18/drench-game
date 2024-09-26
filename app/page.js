@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 const Page = () => {
-  const [noofMoves, setNoOfMoves] = useState(32);
+  const [noofMoves, setNoOfMoves] = useState(30);
   const rows = 14;
   const cols = 14;
 
@@ -176,7 +176,7 @@ const Page = () => {
   }, []);
 
   return (
-    <section className="min-h-[100vh] min-w-[100vh] flex justify-center items-center bg-black bg-opacity-50 overflow-hidden">
+    <section className="h-screen min-screen flex justify-center items-center overflow-hidden">
       <div className="flex justify-center items-center gap-4  max-md:flex-col">
         <div className="grid  grid-rows-14 grid-cols-14 w-fit shadow-2xl relative">
           {gameWon ? (
@@ -222,13 +222,13 @@ const Page = () => {
                     : nums === 5
                     ? "bg-red-600"
                     : "bg-yellow-400"
-                }`}
+                }   `}
               ></div>
             ))
           )}
         </div>
-        <div className="flex flex-col gap-4 p-4 h-full bg-black bg-opacity-20 shadow-xl w-[280px]">
-          <div className="flex gap-3">
+        <div className="flex flex-col gap-4 p-4 h-full bg-black bg-opacity-20 shadow-2xl w-[280px]">
+          <div className="flex gap-5 ml-4">
             <div className="text-6xl bg-black text-white p-4  min-w-20 text-center min-h-20">
               {noofMoves}
             </div>
@@ -237,34 +237,46 @@ const Page = () => {
               board
             </p>
           </div>
-          <div className="grid grid-cols-3 grid-rows-2 gap-4">
+          <div className="grid grid-cols-3 grid-rows-2 gap-4 ml-7">
             <div
-              className="bg-green-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              className={`bg-green-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80 ${
+                noofMoves <= 0 || gameWon ? "pointer-events-none" : ""
+              }`}
               onClick={() => handleChangedfs(1)}
             ></div>
             <div
-              className="bg-pink-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              className={`bg-pink-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80 ${
+                noofMoves <= 0 || gameWon ? "pointer-events-none" : ""
+              }`}
               onClick={() => handleChangedfs(2)}
             ></div>
             <div
-              className="bg-violet-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              className={`bg-violet-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80 ${
+                noofMoves <= 0 || gameWon ? "pointer-events-none" : ""
+              }`}
               onClick={() => handleChangedfs(3)}
             ></div>
             <div
-              className="bg-green-200 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              className={`bg-green-200 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80 ${
+                noofMoves <= 0 || gameWon ? "pointer-events-none" : ""
+              }`}
               onClick={() => handleChangedfs(4)}
             ></div>
             <div
-              className="bg-red-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              className={`bg-red-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80 ${
+                noofMoves <= 0 || gameWon ? "pointer-events-none" : ""
+              }`}
               onClick={() => handleChangedfs(5)}
             ></div>
             <div
-              className="bg-yellow-400 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80"
+              className={`bg-yellow-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80 ${
+                noofMoves <= 0 || gameWon ? "pointer-events-none" : ""
+              }`}
               onClick={() => handleChangedfs(6)}
             ></div>
           </div>
           <button
-            className="px-4 py-2 bg-yellow-600 w-36 ml-10  text-lg"
+            className="px-4 py-2 bg-yellow-600 w-36 ml-14 font-bold  text-xl"
             onClick={() => reset()}
           >
             Reset
