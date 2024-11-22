@@ -1,5 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import DialogBox from "@/components/shared/DialogBox";
+import crownImage from "@/public/pngwing.com.png";
+import Image from "next/image";
+import axios from "axios";
+import { BASE_URL } from "@/lib/constants";
+import Dialog2 from "@/components/shared/Dialog2";
 
 const Page = () => {
   const [noofMoves, setNoOfMoves] = useState(30);
@@ -9,10 +15,38 @@ const Page = () => {
   const [array, setArray] = useState([]);
   const [isVisited, setIsVisited] = useState([]);
   const [gameWon, setGameWon] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
+  const [drenchInfo, setDrenchInfo] = useState(null);
+  const [isOpen2, setIsOpen2] = useState(null);
+  const [recordMoves, setRecordMovers] = useState(null);
 
   const getRandomNumbers = () => {
     return Math.floor(Math.random() * 6) + 1;
   };
+
+  // const getDenchInfo = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       "https://drench-n0ssh9k1a-venkats-projects-1c72d502.vercel.app"
+  //     );
+  //     setDrenchInfo(response.data[0]);
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
+
+  // const incrementDrenchCount = async () => {
+  //   try {
+  //     const response = await axios.post(`${BASE_URL}/api/v1/incDrenchCount`);
+  //     setDrenchInfo(response.data);
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getDenchInfo();
+  // }, []);
 
   const fillRandomNumbersInArray = () => {
     const tempArray = [];
@@ -30,65 +64,9 @@ const Page = () => {
     setIsVisited(isVisitedTempArray);
   };
 
-  const handleChange = (colorChoosed) => {
-    console.log(colorChoosed);
-    let visitedArray = [...isVisited];
-    let boardArray = [...array];
-    let queue = [];
-    let directions = [
-      [1, 0],
-      [0, 1],
-      [0, -1],
-      [-1, 0],
-    ];
-
-    let isVisitedArray = [];
-    for (let i = 0; i < 14; i++) {
-      isVisitedArray[i] = [];
-      for (let j = 0; j < 14; j++) {
-        isVisitedArray[i][j] = 0;
-      }
-    }
-
-    for (let i = 0; i < 14; i++) {
-      for (let j = 0; j < 14; j++) {
-        if (visitedArray[i][j] === 1) {
-          boardArray[i][j] = colorChoosed;
-        }
-      }
-    }
-
-    queue.push([0, 0]);
-    while (queue.length > 0) {
-      let [i, j] = queue.shift();
-      isVisitedArray[i][j] = 1;
-
-      for (let direction = 0; direction < directions.length; direction++) {
-        let row = i + directions[direction][0];
-        let col = j + directions[direction][1];
-
-        if (
-          row >= 0 &&
-          col >= 0 &&
-          row < boardArray.length &&
-          col < boardArray[0].length &&
-          isVisitedArray[row][col] === 0 &&
-          boardArray[row][col] === colorChoosed
-        ) {
-          queue.push([row, col]);
-          visitedArray[row][col] = 1;
-          console.log("hello");
-        }
-      }
-    }
-
-    setIsVisited(visitedArray);
-    setArray(boardArray);
-    setNoOfMoves((prev) => prev - 1);
-  };
-
   const handleChangedfs = (colorChoosed) => {
-    console.log(colorChoosed);
+    const audio = new Audio("/mixkit-modern-technology-select-3124.wav");
+    audio.play();
     let visitedArray = [...isVisited];
     let boardArray = [...array];
     let queue = [];
@@ -121,6 +99,28 @@ const Page = () => {
     setArray(boardArray);
     setNoOfMoves((prev) => prev - 1);
   };
+
+  useEffect(() => {
+    if (noofMoves == 0 && !gameWon) {
+      const audio = new Audio("/273569-Game-over2.wav");
+      audio.play();
+    }
+  }, [noofMoves]);
+
+  useEffect(() => {
+    if (!gameWon) {
+      return;
+    }
+    // if (drenchInfo.leastMovesTaken > 30 - noofMoves) {
+    //   setRecordMovers(30 - noofMoves);
+    //   setIsOpen2(true);
+    // }
+    // incrementDrenchCount();
+    const audio = new Audio(
+      "/403300-Fast_Orchestral_WIN_Celebration_or_Reveal_Sting_02_003878_.wav"
+    );
+    audio.play();
+  }, [gameWon]);
 
   const isWin = (boardArray, colorChoosed) => {
     for (let i = 0; i < 14; i++) {
@@ -176,12 +176,12 @@ const Page = () => {
   }, []);
 
   return (
-    <section className="h-screen min-screen flex justify-center items-center overflow-hidden">
+    <section className="min-h-[100vh] min-screen flex justify-center items-center overflow-x-hidden bg-gray-200 p-2">
       <div className="flex justify-center items-center gap-4  max-md:flex-col">
         <div className="grid  grid-rows-14 grid-cols-14 w-fit shadow-2xl relative">
           {gameWon ? (
             <div
-              className="w-[300px] h-[300px] bg-orange-600 absolute bottom-5 right-5 text-center flex flex-col gap-4 justify-center items-center cursor-pointer"
+              className="w-[350px] h-[350px] max-sm:w-[300px] max-sm:h-[300px] bg-orange-600 absolute bottom-5 right-5 text-center flex flex-col gap-4 justify-center items-center cursor-pointer"
               onClick={() => reset()}
             >
               <h1 className="text-6xl text-white font-bold">
@@ -193,7 +193,7 @@ const Page = () => {
             </div>
           ) : noofMoves <= 0 ? (
             <div
-              className="w-[300px] h-[300px] bg-orange-600 absolute bottom-5 right-5 text-center flex flex-col gap-4 justify-center items-center cursor-pointer"
+              className="w-[350px] h-[350px] max-sm:w-[300px] max-sm:h-[300px] bg-orange-600 absolute bottom-5 right-5 text-center flex flex-col gap-4 justify-center items-center cursor-pointer"
               onClick={() => reset()}
             >
               <h1 className="text-6xl text-white font-bold">
@@ -210,7 +210,7 @@ const Page = () => {
             numsArray.map((nums, colIndex) => (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`w-6 h-6 ${
+                className={`w-7 h-7  max-sm:w-6 max-sm:h-6 ${
                   nums === 1
                     ? "bg-green-600"
                     : nums === 2
@@ -227,17 +227,43 @@ const Page = () => {
             ))
           )}
         </div>
-        <div className="flex flex-col gap-4 p-4 h-full bg-black bg-opacity-20 shadow-2xl w-[280px]">
-          <div className="flex gap-5 ml-4">
-            <div className="text-6xl bg-black text-white p-4  min-w-20 text-center min-h-20">
+
+        <div className="flex flex-col gap-4 p-5 h-full bg-black bg-opacity-20 shadow-2xl w-[300px] max-sm:w-[280px]">
+          {/* <div className="flex flex-col gap-1 w-full max-sm:text-sm">
+            <div className="flex gap-1">
+              <p className="">
+                Least moves
+                <span className="font-bold">
+                  ({drenchInfo?.leastMovesTaken})
+                </span>{" "}
+                taken by
+              </p>
+              <div className=" relative">
+                <Image
+                  src={crownImage}
+                  width={20}
+                  className=" absolute bottom-4 -left-1 animate-bounce"
+                />
+                <span className=" font-bold">
+                  {drenchInfo?.leastMovesTakenBy}
+                </span>
+              </div>
+            </div>
+            <p className="text-md max-sm:text-sm shadow-2xl">
+              Total Number of Drenches:{" "}
+              <span className="font-bold">{drenchInfo?.drenchCount}</span>
+            </p>
+          </div> */}
+          <div className="flex gap-5 ml-4 max-sm:gap-4">
+            <div className="text-6xl max-sm:text-5xl  bg-black text-white p-4  min-w-20 text-center min-h-20">
               {noofMoves}
             </div>
-            <p className="text-xl font-bold">
+            <p className="text-xl max-sm:text-lg font-bold">
               Moves to <br /> Drench the <br />
               board
             </p>
           </div>
-          <div className="grid grid-cols-3 grid-rows-2 gap-4 ml-7">
+          <div className="grid grid-cols-3 grid-rows-2 gap-4 ml-7 max-sm:ml-4">
             <div
               className={`bg-green-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80 ${
                 noofMoves <= 0 || gameWon ? "pointer-events-none" : ""
@@ -269,20 +295,34 @@ const Page = () => {
               onClick={() => handleChangedfs(5)}
             ></div>
             <div
-              className={`bg-yellow-600 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80 ${
+              className={`bg-yellow-400 w-10 h-10  border-black border-4 rounded-full cursor-pointer hover:bg-opacity-80 ${
                 noofMoves <= 0 || gameWon ? "pointer-events-none" : ""
               }`}
               onClick={() => handleChangedfs(6)}
             ></div>
           </div>
           <button
-            className="px-4 py-2 bg-yellow-600 w-36 ml-14 font-bold  text-xl"
+            className="px-4 py-2 bg-yellow-600 w-36 ml-14 font-bold hover:bg-yellow-500 transition-all duration-75 text-xl max-sm:ml-11"
             onClick={() => reset()}
           >
             Reset
           </button>
         </div>
       </div>
+      {true && (
+        <DialogBox
+          setIsOpen={setIsOpen}
+          isOpen={isOpen}
+          className="hidden invisible"
+        />
+      )}
+      <Dialog2
+        isOpen2={isOpen2}
+        setIsOpen2={setIsOpen2}
+        recordMoves={recordMoves}
+        setDrenchInfo={setDrenchInfo}
+        className="hidden invisible"
+      />
     </section>
   );
 };
