@@ -99,7 +99,10 @@ const Page = () => {
     }
 
     helper(visitedArray, boardArray, isVisitedArray, 0, 0, colorChoosed);
-    setGameWon(isWin(boardArray, colorChoosed));
+    if (isWin(boardArray, colorChoosed)) {
+      setGameWon(true);
+      gameWonAudio.play();
+    }
     setIsVisited(visitedArray);
     setArray(boardArray);
     setNoOfMoves((prev) => prev - 1);
@@ -120,8 +123,6 @@ const Page = () => {
     //   setIsOpen2(true);
     // }
     // incrementDrenchCount();
-
-    gameWonAudio.play();
   }, [gameWon]);
 
   const isWin = (boardArray, colorChoosed) => {
@@ -168,6 +169,8 @@ const Page = () => {
   };
 
   const reset = () => {
+    gameOverAudio.pause();
+    gameWonAudio.pause();
     fillRandomNumbersInArray();
     setGameWon(false);
     setNoOfMoves(30);
