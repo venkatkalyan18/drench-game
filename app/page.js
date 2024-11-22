@@ -20,6 +20,11 @@ const Page = () => {
   const [isOpen2, setIsOpen2] = useState(null);
   const [recordMoves, setRecordMovers] = useState(null);
 
+  const gameOverAudio = new Audio("/273569-Game-over2.wav");
+  const gameWonAudio = new Audio(
+    "/403300-Fast_Orchestral_WIN_Celebration_or_Reveal_Sting_02_003878_.wav"
+  );
+
   const getRandomNumbers = () => {
     return Math.floor(Math.random() * 6) + 1;
   };
@@ -102,8 +107,7 @@ const Page = () => {
 
   useEffect(() => {
     if (noofMoves == 0 && !gameWon) {
-      const audio = new Audio("/273569-Game-over2.wav");
-      audio.play();
+      gameOverAudio.play();
     }
   }, [noofMoves]);
 
@@ -116,10 +120,8 @@ const Page = () => {
     //   setIsOpen2(true);
     // }
     // incrementDrenchCount();
-    const audio = new Audio(
-      "/403300-Fast_Orchestral_WIN_Celebration_or_Reveal_Sting_02_003878_.wav"
-    );
-    audio.play();
+
+    gameWonAudio.play();
   }, [gameWon]);
 
   const isWin = (boardArray, colorChoosed) => {
@@ -172,6 +174,8 @@ const Page = () => {
   };
 
   useEffect(() => {
+    gameOverAudio.pause();
+    gameWonAudio.pause();
     fillRandomNumbersInArray();
   }, []);
 
